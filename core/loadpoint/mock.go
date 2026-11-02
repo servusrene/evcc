@@ -55,6 +55,20 @@ func (mr *MockAPIMockRecorder) ActivePhases() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ActivePhases", reflect.TypeOf((*MockAPI)(nil).ActivePhases))
 }
 
+// Authorize mocks base method.
+func (m *MockAPI) Authorize(pin string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Authorize", pin)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Authorize indicates an expected call of Authorize.
+func (mr *MockAPIMockRecorder) Authorize(pin any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Authorize", reflect.TypeOf((*MockAPI)(nil).Authorize), pin)
+}
+
 // ClearPlanLock mocks base method.
 func (m *MockAPI) ClearPlanLock() {
 	m.ctrl.T.Helper()
@@ -193,6 +207,20 @@ func (m *MockAPI) GetAlwaysCharge() api.AlwaysCharge {
 func (mr *MockAPIMockRecorder) GetAlwaysCharge() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAlwaysCharge", reflect.TypeOf((*MockAPI)(nil).GetAlwaysCharge))
+}
+
+// GetAuthorizePin mocks base method.
+func (m *MockAPI) GetAuthorizePin() string {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAuthorizePin")
+	ret0, _ := ret[0].(string)
+	return ret0
+}
+
+// GetAuthorizePin indicates an expected call of GetAuthorizePin.
+func (mr *MockAPIMockRecorder) GetAuthorizePin() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAuthorizePin", reflect.TypeOf((*MockAPI)(nil).GetAuthorizePin))
 }
 
 // GetBatteryBoost mocks base method.
@@ -905,6 +933,20 @@ func (m *MockAPI) SetAlwaysCharge(arg0 api.AlwaysCharge) error {
 func (mr *MockAPIMockRecorder) SetAlwaysCharge(arg0 any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetAlwaysCharge", reflect.TypeOf((*MockAPI)(nil).SetAlwaysCharge), arg0)
+}
+
+// SetAuthorizePin mocks base method.
+func (m *MockAPI) SetAuthorizePin(arg0 string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SetAuthorizePin", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SetAuthorizePin indicates an expected call of SetAuthorizePin.
+func (mr *MockAPIMockRecorder) SetAuthorizePin(arg0 any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetAuthorizePin", reflect.TypeOf((*MockAPI)(nil).SetAuthorizePin), arg0)
 }
 
 // SetBatteryBoost mocks base method.

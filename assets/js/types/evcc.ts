@@ -572,6 +572,7 @@ export interface ConfigLoadpoint {
   minSoc?: number;
   demandPredictor?: DemandPredictor;
   circuit?: string;
+  authorizePin?: string;
   thresholds: {
     enable: LoadpointThreshold;
     disable: LoadpointThreshold;
@@ -676,6 +677,10 @@ export interface Loadpoint {
   chargerSinglePhase: boolean;
   /** Reason why the charger is waiting, like a pending authorization or a required disconnect. */
   chargerStatusReason?: CHARGER_STATUS_REASON | null;
+  /** Charger can be authorized from the UI while waiting for authorization. */
+  authorizeAvailable?: boolean;
+  /** Authorization from the UI requires a PIN. */
+  authorizePinRequired?: boolean;
   /** A vehicle is connected and charging. */
   charging: boolean;
   /** A vehicle is connected to the charger. */

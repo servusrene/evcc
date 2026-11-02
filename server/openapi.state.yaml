@@ -894,6 +894,12 @@ components:
           nullable: true
           allOf:
             - $ref: "#/components/schemas/ChargerStatusReason"
+        authorizeAvailable:
+          description: Charger can be authorized from the UI while waiting for authorization.
+          type: boolean
+        authorizePinRequired:
+          description: Authorization from the UI requires a PIN.
+          type: boolean
         charging:
           description: A vehicle is connected and charging.
           type: boolean

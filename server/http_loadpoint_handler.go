@@ -3,11 +3,13 @@ package server
 import (
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"strconv"
 	"time"
 
 	"github.com/evcc-io/evcc/api"
+	"github.com/evcc-io/evcc/core"
 	"github.com/evcc-io/evcc/core/loadpoint"
 	"github.com/evcc-io/evcc/core/planner"
 	"github.com/evcc-io/evcc/core/site"
@@ -193,6 +195,36 @@ func vehicleRemoveHandler(lp loadpoint.API) http.HandlerFunc {
 func vehicleDetectHandler(lp loadpoint.API) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		lp.StartVehicleDetection()
+		jsonWrite(w, struct{}{})
+	}
+}
+
+// authorizeHandler authorizes a charger waiting for authorization
+func authorizeHandler(lp loadpoint.API) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var req struct {
+			Pin string `json:"pin"`
+		}
+
+		if err := jsonDecoder(r.Body).Decode(&req); err != nil && !errors.Is(err, io.EOF) {
+			jsonError(w, http.StatusBadRequest, err)
+			return
+		}
+
+		if err := lp.Authorize(req.Pin); err != nil {
+			status := http.StatusBadRequest
+			switch {
+			case errors.Is(err, core.ErrAuthorizeInvalidPin):
+				status = http.StatusForbidden
+			case errors.Is(err, core.ErrAuthorizeLocked):
+				status = http.StatusTooManyRequests
+			case errors.Is(err, core.ErrAuthorizeNotWaiting):
+				status = http.StatusConflict
+			}
+			jsonError(w, status, err)
+			return
+		}
+
 		jsonWrite(w, struct{}{})
 	}
 }

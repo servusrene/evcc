@@ -95,6 +95,11 @@ func (suite *ocppTestSuite) stationID(id string) string {
 }
 
 func (suite *ocppTestSuite) startChargePoint(id string, connectorId int) (ocpp16.ChargePoint, *ocppj.Client, func()) {
+	cp, endpoint, _, stop := suite.startChargePointWithHandler(id, connectorId)
+	return cp, endpoint, stop
+}
+
+func (suite *ocppTestSuite) startChargePointWithHandler(id string, connectorId int) (ocpp16.ChargePoint, *ocppj.Client, *ChargePointHandler, func()) {
 	// Buffered generously: the handlers in ocpp_test_handler.go send to
 	// triggerC synchronously (via defer) on the charge point's WebSocket
 	// read-loop goroutine. If that send blocks, the read loop cannot deliver
@@ -102,7 +107,8 @@ func (suite *ocppTestSuite) startChargePoint(id string, connectorId int) (ocpp16
 	// on, deadlocking the test. The buffer keeps the send from blocking
 	// until the drain catches up.
 	handler := &ChargePointHandler{
-		triggerC: make(chan remotetrigger.MessageTrigger, 16),
+		triggerC:     make(chan remotetrigger.MessageTrigger, 16),
+		remoteStartC: make(chan string, 16),
 	}
 
 	// ocppj endpoint with handler
@@ -166,7 +172,7 @@ func (suite *ocppTestSuite) startChargePoint(id string, connectorId int) (ocpp16
 
 	suite.T().Cleanup(stop)
 
-	return cp, endpoint, stop
+	return cp, endpoint, handler, stop
 }
 
 func (suite *ocppTestSuite) handleTrigger(cp ocpp16.ChargePoint, connectorId int, msg remotetrigger.MessageTrigger) {
@@ -336,6 +342,37 @@ func (suite *ocppTestSuite) TestAutoStart() {
 	suite.Require().NoError(err)
 }
 
+func (suite *ocppTestSuite) TestRemoteAuthorize() {
+	id := suite.stationID("test-authorize")
+
+	cp, _, handler, _ := suite.startChargePointWithHandler(id, 1)
+	suite.Require().NoError(cp.Start(ocppTestUrl))
+
+	c, err := NewOCPP(suite.T().Context(), id, 1, "", "", 0, false, false, false, false, false, ocppTestConnectTimeout)
+	suite.Require().NoError(err)
+	c.authIdTag = defaultIdTag
+
+	_, err = cp.StatusNotification(1, core.NoError, core.ChargePointStatusPreparing)
+	suite.Require().NoError(err)
+	suite.Require().True(c.conn.NeedsAuthentication())
+
+	// waiting for authorization does not start a transaction by itself
+	suite.Never(func() bool { return len(handler.remoteStartC) > 0 }, 200*time.Millisecond, 10*time.Millisecond)
+
+	suite.Require().NoError(c.authorize("vid"))
+	suite.Equal("vid", <-handler.remoteStartC)
+
+	suite.Require().NoError(c.authorize(""))
+	suite.Equal(defaultIdTag, <-handler.remoteStartC)
+
+	_, err = cp.StartTransaction(1, "vid", 0, types.NewDateTime(suite.clock.Now()))
+	suite.Require().NoError(err)
+
+	// authorized connector ignores further requests
+	suite.Require().NoError(c.authorize("vid"))
+	suite.Empty(handler.remoteStartC)
+}
+
 func (suite *ocppTestSuite) TestTimeout() {
 	id1 := suite.stationID("test-4")
 
@@ -390,5 +427,15 @@ func (suite *ocppTestSuite) TestEnabledAvailable() {
 		enabled, err := c.Enabled()
 		suite.Require().NoError(err)
 		suite.Equal(enable, enabled)
+	}
+}
+
+func TestOcppRemoteStartAuthorizeExclusive(t *testing.T) {
+	_, err := NewOCPPFromConfig(t.Context(), map[string]any{
+		"remotestart":     true,
+		"remoteauthorize": true,
+	})
+	if err == nil {
+		t.Fatal("expected error")
 	}
 }

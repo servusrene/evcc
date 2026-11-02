@@ -38,6 +38,7 @@
 					@click="goTo(loadpoint.id)"
 					@open-charging-plan-modal="openChargingPlanModal(loadpoint.id)"
 					@open-settings-modal="openSettingsModal(loadpoint.id)"
+					@open-authorize-modal="openAuthorizeModal(loadpoint.id)"
 				/>
 			</div>
 		</div>
@@ -83,6 +84,7 @@
 				:voltage="voltage"
 				:grid-connection="gridConnection"
 			/>
+			<AuthorizeModal ref="authorizeModal" />
 		</div>
 	</div>
 </template>
@@ -107,10 +109,11 @@ import type {
 } from "@/types/evcc";
 import ChargingPlanModal from "../ChargingPlans/ChargingPlanModal.vue";
 import SettingsModal from "../Loadpoints/SettingsModal.vue";
+import AuthorizeModal from "./AuthorizeModal.vue";
 
 export default defineComponent({
 	name: "Loadpoints",
-	components: { Loadpoint, ChargingPlanModal, SettingsModal },
+	components: { Loadpoint, ChargingPlanModal, SettingsModal, AuthorizeModal },
 	props: {
 		loadpoints: { type: Array as PropType<UiLoadpoint[]>, default: () => [] },
 		vehicles: { type: Array as PropType<Vehicle[]> },
@@ -268,6 +271,12 @@ export default defineComponent({
 		openSettingsModal(loadpointId: string) {
 			const modal = this.$refs["settingsModal"] as
 				| InstanceType<typeof SettingsModal>
+				| undefined;
+			modal?.open(loadpointId);
+		},
+		openAuthorizeModal(loadpointId: string) {
+			const modal = this.$refs["authorizeModal"] as
+				| InstanceType<typeof AuthorizeModal>
 				| undefined;
 			modal?.open(loadpointId);
 		},

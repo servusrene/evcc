@@ -350,6 +350,9 @@ func (lp *Loadpoint) identifyVehicleByStatus() {
 	}
 
 	vehicle := lp.coordinator.IdentifyVehicleByStatus()
+	if vehicle != nil {
+		lp.statusVehicle = vehicle
+	}
 
 	// the status query is slow, a vehicle assigned meanwhile (user selection) wins
 	if vehicle == nil || lp.GetVehicle() != nil {

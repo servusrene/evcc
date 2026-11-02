@@ -776,6 +776,37 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/EmptyResult"
+  /loadpoints/{id}/authorize:
+    post:
+      operationId: authorizeLoadpoint
+      summary: Authorize charging
+      description: "Authorizes a charger that is waiting for authorization. Requires the configured PIN if one is set."
+      tags:
+        - loadpoints
+      parameters:
+        - $ref: "#/components/parameters/id"
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pin:
+                  type: string
+                  description: 4-digit PIN, required if configured for the loadpoint.
+                  example: "1234"
+      responses:
+        "200":
+          $ref: "#/components/responses/EmptyResult"
+        "400":
+          description: Charger does not support authorization
+        "403":
+          description: Invalid PIN
+        "409":
+          description: Charger is not waiting for authorization
+        "429":
+          description: Too many failed attempts, try again later
   /loadpoints/{id}/vehicle/{name}:
     post:
       operationId: assignLoadpointVehicle

@@ -46,5 +46,7 @@ params:
     default: Energy.Active.Import.Register,Power.Active.Import,Current.Import
 render: |
   {{ include "ocpp" . }}
+  {{- if not .remoteauthorize }}
   remotestart: true
+  {{- end }}
   meterinterval: 30s

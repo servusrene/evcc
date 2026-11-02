@@ -132,6 +132,7 @@ type Loadpoint struct {
 	smartFeedInPriorityLimit *float64 // prevent charging if feed-in cost is above this value
 	batteryBoost             int      // battery boost state
 	batteryBoostLimit        int      // battery boost soc limit (0-100, 100=disabled)
+	authorizePin             string   // pin for manual charger authorization, empty: none
 
 	mode                api.ChargeMode
 	alwaysCharge        api.AlwaysCharge // smart mode: charge continuously at least at min power
@@ -145,6 +146,10 @@ type Loadpoint struct {
 	phasesSwitched      time.Time        // Phase switch timestamp
 	vehicleDetectTicker *clock.Ticker
 	vehicleIdentifier   string
+	authorizeChecked    time.Time   // last charger authorization attempt
+	statusVehicle       api.Vehicle // vehicle the api reported as connected during this connection
+	authorizeFailures   int         // failed manual authorization attempts
+	authorizeLocked     time.Time   // manual authorization blocked until
 
 	charger          api.Charger
 	chargeTimer      api.ChargeTimer
@@ -438,6 +443,9 @@ func (lp *Loadpoint) restoreSettings() {
 	if v, err := lp.settings.Int(keys.BatteryBoostLimit); err == nil {
 		lp.SetBatteryBoostLimit(int(v))
 	}
+	if v, err := lp.settings.String(keys.AuthorizePin); err == nil {
+		lp.authorizePin = v
+	}
 
 	var thresholds loadpoint.ThresholdsConfig
 	if err := lp.settings.Json(keys.Thresholds, &thresholds); err == nil {
@@ -667,6 +675,9 @@ func (lp *Loadpoint) evVehicleDisconnectHandler() {
 	// forget startup energy offset
 	lp.chargedAtStartup = 0
 
+	lp.authorizeChecked = time.Time{}
+	lp.statusVehicle = nil
+
 	// remove charger vehicle id and stop potential detection
 	lp.setVehicleIdentifier("")
 	lp.stopVehicleDetection()
@@ -823,6 +834,10 @@ func (lp *Loadpoint) Prepare(site site.API, uiChan chan<- util.Param, pushChan c
 	for _, f := range api.FeatureValues() {
 		lp.publishChargerFeature(f)
 	}
+
+	_, authorize := api.Cap[api.Authorizer](lp.charger)
+	lp.publish(keys.AuthorizeAvailable, authorize)
+	lp.publish(keys.AuthorizePinRequired, lp.authorizePin != "")
 
 	// charger icon
 	if c, ok := api.Cap[api.IconDescriber](lp.charger); ok {
@@ -2609,6 +2624,8 @@ NO_DIM:
 		if lp.vehicleUnidentified() {
 			lp.identifyVehicleByStatus()
 		}
+
+		lp.authorizeByVehicleStatus()
 	}
 
 	// release deferred connect notification once detection has settled

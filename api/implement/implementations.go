@@ -6,6 +6,21 @@ import (
 	"github.com/evcc-io/evcc/api"
 )
 
+func Authorizer(authorizer0 func(string) error) api.Authorizer {
+	if authorizer0 == nil {
+		return nil
+	}
+	return &iAuthorizer{authorizer0}
+}
+
+type iAuthorizer struct {
+	authorizer0 func(string) error
+}
+
+func (i *iAuthorizer) Authorize(p0 string) error {
+	return i.authorizer0(p0)
+}
+
 func Battery(battery0 func() (float64, error)) api.Battery {
 	if battery0 == nil {
 		return nil

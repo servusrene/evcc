@@ -771,6 +771,15 @@ presets:
       help:
         de: Diese Option nur aktivieren wenn keinerlei Möglichkeit besteht Transaktionen seitens des Ladepunktes zu initiieren! Das ist nur der Fall wenn z. B. kein RFID-Lesegerät vorhanden ist und Ladevorgänge grundsätzlich einzeln per App freigeschaltet werden müssten. Normalerweise sollte der Ladepunkt am Gerät immer so konfiguriert werden, dass entweder eine RFID-Karte zur Freischaltung verwendet wird oder der Ladepunkt auf "Autostart", "Freies Laden" o.ä. eingestellt ist. Zunächst die Dokumentation und die Konfigurationsmöglichkeiten des Ladepunktes prüfen, ggf. beim Hersteller nachfragen! (Verwendet OCPP RemoteStartTransaction)
         en: Only enable this option if there is no way to initiate transactions from the charger side! This is only the case if e.g. no RFID reader is available and charging processes would have to be released individually via app. Normally, the charger should always be configured at the device so that either an RFID card is used for activation or the charger is set to "Autostart", "Free Charging" or similar. First check the documentation and configuration possibilities of the charger, ask the manufacturer if necessary! (Uses OCPP RemoteStartTransaction)
+    - name: remoteauthorize
+      advanced: true
+      type: bool
+      description:
+        de: Freigabe durch evcc
+        en: Authorization by evcc
+      help:
+        de: Der Ladepunkt bleibt nach dem Anstecken gesperrt. evcc gibt ihn frei, sobald die Fahrzeug-API ein konfiguriertes Fahrzeug als angesteckt meldet, oder per Schaltfläche "Freischalten" in der Oberfläche (optional mit PIN, siehe Ladepunkt-Einstellungen). RFID-Karten am Ladepunkt funktionieren weiterhin. Nicht zusammen mit "Remote-Transaktion bei Fahrzeugverbindung starten" verwenden. (Verwendet OCPP RemoteStartTransaction)
+        en: The charger stays locked after plugging in. evcc authorizes it once the vehicle API reports a configured vehicle as connected, or via the "Authorize" button in the UI (optionally protected by a PIN, see loadpoint settings). RFID cards at the charger keep working. Do not combine with "Start remote transaction on vehicle connection". (Uses OCPP RemoteStartTransaction)
     - name: idtag
       advanced: true
       private: true

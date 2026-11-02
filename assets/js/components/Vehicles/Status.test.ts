@@ -63,6 +63,28 @@ describe("basics", () => {
   });
 });
 
+describe("authorization", () => {
+  const waiting = {
+    enabled: true,
+    connected: true,
+    chargerStatusReason: "waitingforauthorization",
+  };
+  const selector = "[data-testid=vehicle-status-awaiting-authorization]";
+
+  test("shows status only if charger cannot be authorized from ui", () => {
+    const wrapper = mount(Status, { props: waiting });
+    expect(wrapper.find(selector).text()).eq("");
+    expect(wrapper.find(`button${selector}`).exists()).eq(false);
+  });
+  test("emits authorize on button click", async () => {
+    const wrapper = mount(Status, { props: { ...waiting, authorizeAvailable: true } });
+    const button = wrapper.find(`button${selector}`);
+    expect(button.text()).eq("Authorize");
+    await button.trigger("click");
+    expect(wrapper.emitted("authorize")).toHaveLength(1);
+  });
+});
+
 describe("min charge", () => {
   test("active when minSocNotReached is true", () => {
     expectEntries(

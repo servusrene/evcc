@@ -34,6 +34,7 @@ type DynamicConfig struct {
 	PlanTime                 time.Time `json:"planTime"`
 	PlanPrecondition_        int64     `json:"planPrecondition" mapstructure:"planPrecondition"` // TODO deprecated, keep for compatibility
 	BatteryBoostLimit        int       `json:"batteryBoostLimit"`
+	AuthorizePin             string    `json:"authorizePin,omitempty"`
 	LimitEnergy              float64   `json:"limitEnergy"`
 	LimitSoc                 int       `json:"limitSoc"`
 	MinSoc                   int       `json:"minSoc"`
@@ -79,6 +80,7 @@ func (payload DynamicConfig) Apply(lp API) error {
 		lp.SetSmartCostLimit(payload.SmartCostLimit),
 		lp.SetSmartFeedInPriorityLimit(payload.SmartFeedInPriorityLimit),
 	)
+	pinErr := lp.SetAuthorizePin(payload.AuthorizePin)
 	lp.SetSolarShare(payload.SolarShare)
 	lp.SetDemandPredictor(payload.DemandPredictor)
 
@@ -130,5 +132,5 @@ func (payload DynamicConfig) Apply(lp API) error {
 		}
 	}
 
-	return cmp.Or(err, limitErr)
+	return cmp.Or(err, limitErr, pinErr)
 }

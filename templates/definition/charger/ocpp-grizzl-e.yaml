@@ -42,6 +42,6 @@ params:
 render: |
   {{ include "ocpp" . }}
   stacklevelzero: true
-  {{- if not .remotestart }}
+  {{- if not (or .remotestart .remoteauthorize) }}
   remotestart: true # force remotestart
   {{- end }}

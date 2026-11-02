@@ -12,6 +12,7 @@
 			@open-loadpoint-settings="$emit('open-loadpoint-settings')"
 			@open-minsoc-settings="openVehicleSettings"
 			@open-plan-modal="$emit('open-modal')"
+			@authorize="$emit('authorize')"
 		/>
 		<div class="mt-2 mb-4 d-flex gap-2">
 			<BatteryBoostButton
@@ -145,6 +146,7 @@ export default defineComponent({
 		mode: String as PropType<CHARGE_MODE>,
 		optimizerControlled: Boolean,
 		chargerStatusReason: String,
+		authorizeAvailable: Boolean,
 		phaseAction: String,
 		phaseRemainingInterpolated: Number,
 		forecast: Object as PropType<UiForecast>,
@@ -194,6 +196,7 @@ export default defineComponent({
 		"open-loadpoint-settings",
 		"batteryboost-updated",
 		"open-modal",
+		"authorize",
 	],
 	data() {
 		return {

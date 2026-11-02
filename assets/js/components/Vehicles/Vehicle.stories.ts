@@ -146,6 +146,12 @@ WaitingForAuthorization.args = {
   chargerStatusReason: "waitingforauthorization",
 };
 
+export const WaitingForAuthorizationButton = Template.bind({});
+WaitingForAuthorizationButton.args = {
+  ...WaitingForAuthorization.args,
+  authorizeAvailable: true,
+};
+
 export const VehicleLimit = Template.bind({});
 VehicleLimit.args = {
   ...baseState,

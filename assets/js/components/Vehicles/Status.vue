@@ -108,6 +108,7 @@ export default defineComponent({
 		charging: Boolean,
 		chargingPlanDisabled: Boolean,
 		chargerStatusReason: String,
+		authorizeAvailable: Boolean,
 		connected: Boolean,
 		currency: String as PropType<CURRENCY>,
 		effectiveLimitSoc: Number,
@@ -147,7 +148,7 @@ export default defineComponent({
 		vehicleLimitSoc: { type: Number, default: 0 },
 		statusOverride: { type: Object as PropType<VehicleStatus>, default: undefined },
 	},
-	emits: ["open-loadpoint-settings", "open-minsoc-settings", "open-plan-modal"],
+	emits: ["open-loadpoint-settings", "open-minsoc-settings", "open-plan-modal", "authorize"],
 	data() {
 		return {
 			statusOverrideActive: false,
@@ -335,9 +336,13 @@ export default defineComponent({
 				{
 					id: "awaitingAuthorization",
 					visible: !this.heating && this.chargerStatusReason === REASON_AUTH,
+					content: this.authorizeAvailable ? t("authorize") : "",
 					tooltipContent: t("awaitingAuthorization"),
 					iconComponent: RfidWaitIcon,
+					itemClass: this.authorizeAvailable ? "text-primary" : "",
 					testId: "vehicle-status-awaiting-authorization",
+					clickable: this.authorizeAvailable,
+					clickHandler: this.authorizeAvailable ? () => this.authorize() : undefined,
 				},
 				{
 					id: "disconnectRequired",
@@ -478,6 +483,9 @@ export default defineComponent({
 		},
 		openPlanModal() {
 			this.$emit("open-plan-modal");
+		},
+		authorize() {
+			this.$emit("authorize");
 		},
 		getSmartCostTooltip() {
 			const prefix = `main.vehicleStatus.${this.smartCostPrice ? "cheap" : "clean"}`;

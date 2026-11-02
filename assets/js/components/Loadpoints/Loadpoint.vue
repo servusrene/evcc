@@ -104,6 +104,7 @@
 			@open-loadpoint-settings="openSettingsModal"
 			@batteryboost-updated="setBatteryBoost"
 			@open-modal="$emit('open-charging-plan-modal')"
+			@authorize="authorize"
 		/>
 	</div>
 </template>
@@ -182,6 +183,8 @@ export default defineComponent({
 
 		// charger
 		chargerStatusReason: String as PropType<CHARGER_STATUS_REASON | null>,
+		authorizeAvailable: Boolean,
+		authorizePinRequired: Boolean,
 		chargerFeatureIntegratedDevice: Boolean,
 		chargerFeatureHeating: Boolean,
 		chargerFeatureContinuous: Boolean,
@@ -273,7 +276,7 @@ export default defineComponent({
 		rangePerSoc: Number,
 		socPerKwh: { type: Number, required: true },
 	},
-	emits: ["open-charging-plan-modal", "open-settings-modal"],
+	emits: ["open-charging-plan-modal", "open-settings-modal", "open-authorize-modal"],
 	data() {
 		return {
 			tickerHandler: null as Timeout,
@@ -418,6 +421,13 @@ export default defineComponent({
 		},
 		openSettingsModal() {
 			this.$emit("open-settings-modal");
+		},
+		authorize() {
+			if (this.authorizePinRequired) {
+				this.$emit("open-authorize-modal");
+				return;
+			}
+			api.post(this.apiPath("authorize"));
 		},
 	},
 });

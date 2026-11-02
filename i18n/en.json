@@ -512,6 +512,8 @@
       },
       "addMeter": "Add meter",
       "advancedConfig": "Advanced configuration",
+      "authorizePinHelp": "4-digit PIN required to authorize charging from the UI. Leave empty to allow authorization without PIN.",
+      "authorizePinLabel": "Authorization PIN",
       "cancel": "Cancel",
       "chargerError": {
         "charging": "Configuring a charger is required.",
@@ -1592,6 +1594,15 @@
       "onceTip": "Only for this session",
       "permanent": "stays on permanently"
     },
+    "authorizeModal": {
+      "failed": "Authorization failed.",
+      "invalidPin": "Wrong PIN.",
+      "locked": "Too many failed attempts. Please try again later.",
+      "notWaiting": "The charger is not waiting for authorization.",
+      "pin": "PIN",
+      "submit": "Authorize",
+      "title": "Authorize charging"
+    },
     "chargingPlan": {
       "active": "Active",
       "addRepeatingPlan": "Add repeating plan",
@@ -1842,6 +1853,7 @@
       "title": "Vehicle Settings"
     },
     "vehicleStatus": {
+      "authorize": "Authorize",
       "awaitingAuthorization": "Waiting for authorization.",
       "batteryBoost": "Battery boost active.",
       "batteryBoostBelowLimit": "Battery too low for boost.",

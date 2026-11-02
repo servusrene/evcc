@@ -15,6 +15,9 @@ idtag: {{ .idtag }}
 {{- if .remotestart }}
 remotestart: {{ .remotestart }}
 {{- end }}
+{{- if .remoteauthorize }}
+remoteauthorize: {{ .remoteauthorize }}
+{{- end }}
 {{- if .metervalues }}
 metervalues: {{ .metervalues }}
 {{- end }}

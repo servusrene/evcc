@@ -512,6 +512,8 @@
       },
       "addMeter": "Zähler hinzufügen",
       "advancedConfig": "Erweiterte Konfiguration",
+      "authorizePinHelp": "4-stellige PIN, die zum Autorisieren des Ladevorgangs über die Oberfläche nötig ist. Leer lassen, um ohne PIN zu autorisieren.",
+      "authorizePinLabel": "PIN für Autorisierung",
       "cancel": "Abbrechen",
       "chargerError": {
         "charging": "Wallbox muss konfiguriert sein.",
@@ -1592,6 +1594,15 @@
       "onceTip": "Nur für diese Ladung",
       "permanent": "bleibt dauerhaft an"
     },
+    "authorizeModal": {
+      "failed": "Autorisierung fehlgeschlagen.",
+      "invalidPin": "Falsche PIN.",
+      "locked": "Zu viele Fehlversuche. Bitte später erneut versuchen.",
+      "notWaiting": "Die Wallbox wartet nicht auf Autorisierung.",
+      "pin": "PIN",
+      "submit": "Autorisieren",
+      "title": "Laden autorisieren"
+    },
     "chargingPlan": {
       "active": "Aktiv",
       "addRepeatingPlan": "Wiederholenden Plan hinzufügen",
@@ -1842,6 +1853,7 @@
       "title": "Fahrzeugeinstellungen"
     },
     "vehicleStatus": {
+      "authorize": "Autorisieren",
       "awaitingAuthorization": "Warte auf Autorisierung.",
       "batteryBoost": "Batterie Boost aktiv.",
       "batteryBoostBelowLimit": "Batterie zu niedrig für Boost.",

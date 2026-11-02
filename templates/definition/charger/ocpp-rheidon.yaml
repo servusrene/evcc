@@ -21,6 +21,6 @@ params:
   - preset: ocpp
 render: |
   {{ include "ocpp" . }}
-  {{- if not .remotestart }}
+  {{- if not (or .remotestart .remoteauthorize) }}
   remotestart: true # force remotestart
   {{- end }}

@@ -285,6 +285,7 @@ func (s *HTTPd) RegisterSiteHandlers(site site.API) {
 			"vehicle":                   {"POST", "/vehicle/{name:[a-zA-Z0-9_.:-]+}", vehicleSelectHandler(site, lp)},
 			"vehicle2":                  {"DELETE", "/vehicle", vehicleRemoveHandler(lp)},
 			"vehicleDetect":             {"PATCH", "/vehicle", vehicleDetectHandler(lp)},
+			"authorize":                 {"POST", "/authorize", authorizeHandler(lp)},
 			"enableThreshold":           {"POST", "/enable/threshold/{value:-?[0-9.]+}", floatHandler(pass(lp.SetEnableThreshold), lp.GetEnableThreshold)},
 			"enableDelay":               {"POST", "/enable/delay/{value:[0-9]+}", durationHandler(pass(lp.SetEnableDelay), lp.GetEnableDelay)},
 			"disableThreshold":          {"POST", "/disable/threshold/{value:-?[0-9.]+}", floatHandler(pass(lp.SetDisableThreshold), lp.GetDisableThreshold)},

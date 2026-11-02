@@ -39,6 +39,10 @@ const (
 	ChargerPhases1p3p   = "chargerPhases1p3p"   // api.PhaseSwitcher: 1p3p chargers
 	ChargerStatusReason = "chargerStatusReason" // either awaiting authorization or disconnect required
 
+	AuthorizeAvailable   = "authorizeAvailable"   // api.Authorizer: charger can be authorized by evcc
+	AuthorizePin         = "authorizePin"         // pin for manual authorization, settings only
+	AuthorizePinRequired = "authorizePinRequired" // manual authorization requires a pin
+
 	// loadpoint status
 	Enabled   = "enabled"   // loadpoint enabled
 	Connected = "connected" // connected

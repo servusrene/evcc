@@ -55,6 +55,7 @@ type OCPP struct {
 	txProfile           bool
 	profileCurrent      float64
 	transactionID       int
+	authIdTag           string
 }
 
 const defaultIdTag = "evcc" // RemoteStartTransaction only
@@ -84,6 +85,7 @@ func NewOCPPFromConfig(ctx context.Context, other map[string]any) (api.Charger, 
 		StackLevelZero       *bool
 		ProfileKindRelative  bool
 		RemoteStart          bool
+		RemoteAuthorize      bool
 		NoChangeAvailability *bool
 		ChargingProfile      types.ChargingProfilePurposeType
 	}{
@@ -103,12 +105,22 @@ func NewOCPPFromConfig(ctx context.Context, other map[string]any) (api.Charger, 
 		return nil, fmt.Errorf("TxProfile requires a positive connector: %d", cc.Connector)
 	}
 
+	if cc.RemoteStart && cc.RemoteAuthorize {
+		return nil, errors.New("remotestart and remoteauthorize are mutually exclusive")
+	}
+
+	// an idTag on the connector triggers an immediate remote start, so authorization keeps it local
+	idTag := cc.IdTag
+	if cc.RemoteAuthorize {
+		idTag = ""
+	}
+
 	stackLevelZero := cc.StackLevelZero != nil && *cc.StackLevelZero
 	profileKindRelative := cc.ProfileKindRelative
 	noChangeAvailability := cc.NoChangeAvailability != nil && *cc.NoChangeAvailability
 
 	c, err := NewOCPP(ctx,
-		cc.StationId, cc.Connector, cc.IdTag,
+		cc.StationId, cc.Connector, idTag,
 		cc.MeterValues, cc.MeterInterval,
 		cc.ForcePowerCtrl, stackLevelZero, profileKindRelative, cc.RemoteStart, noChangeAvailability,
 		cc.ConnectTimeout)
@@ -120,6 +132,11 @@ func NewOCPPFromConfig(ctx context.Context, other map[string]any) (api.Charger, 
 		return nil, api.ErrSponsorRequired
 	}
 	c.txProfile = cc.ChargingProfile == types.ChargingProfilePurposeTxProfile
+
+	if cc.RemoteAuthorize {
+		c.authIdTag = cmp.Or(cc.IdTag, c.cp.IdTag, defaultIdTag)
+		implement.Has(c, implement.Authorizer(c.authorize))
+	}
 
 	if c.cp.HasMeasurement(types.MeasurandPowerActiveImport) {
 		implement.Has(c, implement.Meter(c.conn.CurrentPower))
@@ -476,6 +493,15 @@ func (c *OCPP) phases1p3p(phases int) error {
 }
 
 var _ api.Identifier = (*OCPP)(nil)
+
+// authorize starts a transaction while the connector waits for authorization
+func (c *OCPP) authorize(key string) error {
+	if !c.conn.NeedsAuthentication() {
+		return nil
+	}
+
+	return c.conn.RemoteStartTransactionRequest(cmp.Or(key, c.authIdTag))
+}
 
 // Identify implements the api.Identifier interface
 func (c *OCPP) Identify() ([]string, error) {

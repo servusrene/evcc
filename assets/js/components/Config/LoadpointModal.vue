@@ -443,6 +443,25 @@
 							<div v-else>
 								<p class="text-muted">{{ $t("config.loadpoint.noVehicles") }}</p>
 							</div>
+
+							<FormRow
+								v-if="chargerIsAuthorizable"
+								id="loadpointAuthorizePin"
+								:label="$t('config.loadpoint.authorizePinLabel')"
+								:help="$t('config.loadpoint.authorizePinHelp')"
+								optional
+							>
+								<input
+									id="loadpointAuthorizePin"
+									v-model="values.authorizePin"
+									type="password"
+									class="form-control w-50 w-min-200"
+									inputmode="numeric"
+									pattern="[0-9]{4}"
+									maxlength="4"
+									autocomplete="off"
+								/>
+							</FormRow>
 						</div>
 
 						<div v-if="chargerIsHeating">
@@ -836,6 +855,9 @@ export default {
 		},
 		chargerIsContinuous() {
 			return this.chargerStatus?.continuous?.value || false;
+		},
+		chargerIsAuthorizable() {
+			return this.chargerStatus?.authorize?.value === true;
 		},
 		chargerIsHeating() {
 			return this.chargerStatus?.heating?.value === true;

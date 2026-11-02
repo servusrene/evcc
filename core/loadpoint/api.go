@@ -211,6 +211,13 @@ type API interface {
 	// SetBatteryBoostLimit sets the battery boost soc limit
 	SetBatteryBoostLimit(int)
 
+	// GetAuthorizePin returns the pin required for manual charger authorization
+	GetAuthorizePin() string
+	// SetAuthorizePin sets the pin required for manual charger authorization
+	SetAuthorizePin(string) error
+	// Authorize authorizes the charging session, verifying the configured pin
+	Authorize(pin string) error
+
 	//
 	// smart grid charging
 	//

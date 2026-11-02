@@ -8,7 +8,8 @@ import (
 )
 
 type ChargePointHandler struct {
-	triggerC chan remotetrigger.MessageTrigger
+	triggerC     chan remotetrigger.MessageTrigger
+	remoteStartC chan string
 }
 
 // core
@@ -45,6 +46,7 @@ func (handler *ChargePointHandler) OnGetConfiguration(request *core.GetConfigura
 }
 
 func (handler *ChargePointHandler) OnRemoteStartTransaction(request *core.RemoteStartTransactionRequest) (confirmation *core.RemoteStartTransactionConfirmation, err error) {
+	handler.remoteStartC <- request.IdTag
 	return core.NewRemoteStartTransactionConfirmation(types.RemoteStartStopStatusAccepted), nil
 }
 

@@ -48,5 +48,7 @@ params:
     default: -Current.Offered,Power.Offered
 render: |
   {{ include "ocpp" . }}
-  remotestart: true 
+  {{- if not .remoteauthorize }}
+  remotestart: true
+  {{- end }}
   stacklevelzero: true

@@ -62,6 +62,7 @@ func generate(out io.Writer) error {
 	var types []typeStruct
 
 	for _, typ := range []reflect.Type{
+		reflect.TypeFor[api.Authorizer](),
 		reflect.TypeFor[api.Battery](),
 		reflect.TypeFor[api.BatteryCapacity](),
 		reflect.TypeFor[api.BatteryController](),

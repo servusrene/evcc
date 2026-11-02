@@ -400,6 +400,12 @@ func testInstance(ctx context.Context, instance any) map[string]testResult {
 	})
 
 	wg.Go(func() {
+		if api.HasCap[api.Authorizer](instance) {
+			makeResult("authorize", true, nil)
+		}
+	})
+
+	wg.Go(func() {
 		if hasFeature(instance, api.IntegratedDevice) {
 			makeResult("integratedDevice", true, nil)
 		}
