@@ -65,8 +65,15 @@ type interceptingServer struct {
 	ws.Server
 }
 
+// Write records frames sent to a charger, including relayed upstream frames.
+func (s *interceptingServer) Write(id string, data []byte) error {
+	messages.add(directionSend, id, data)
+	return s.Server.Write(id, data)
+}
+
 func (s *interceptingServer) SetMessageHandler(handler ws.MessageHandler) {
 	s.Server.SetMessageHandler(func(ch ws.Channel, data []byte) error {
+		messages.add(directionRecv, ch.ID(), data)
 		if chargerMessageHook != nil && chargerMessageHook(ch, data) {
 			return nil
 		}

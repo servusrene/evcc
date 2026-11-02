@@ -851,6 +851,7 @@
       "forwardingConfigured": "Forwarding configured",
       "forwardingError": "Forwarding error",
       "forwardingOff": "No forwarding configured",
+      "maintenance": "Maintenance",
       "noChargers": "No OCPP chargers detected.",
       "stations": "Station IDs",
       "stationsHelp": "Configured and detected OCPP chargers. In addition to local control, you can forward messages to an external server (e.g. for billing).",
@@ -886,6 +887,64 @@
       "upstreamUrlHelp": "OCPP WebSocket URL of the external server.",
       "username": "Username",
       "usernameHelp": "For HTTP Basic Auth to the upstream server."
+    },
+    "ocppmaintenance": {
+      "connection": "Connection",
+      "connector": "Connector {id}",
+      "connectors": "Connectors",
+      "description": "Send OCPP commands directly to the charger. Use them when the charger no longer responds as expected.",
+      "failed": "The charger did not accept the command.",
+      "firmwareVersion": "Firmware",
+      "hard": {
+        "button": "Hard reset",
+        "confirm": "Hard reset",
+        "confirmText": "The charger reboots completely like after a power cycle. Running charging sessions are interrupted. Only use this if a soft reset did not help.",
+        "success": "Hard reset accepted. The charger reconnects after the reboot."
+      },
+      "log": {
+        "collapseAll": "Collapse all",
+        "empty": "No messages recorded yet.",
+        "error": "Error {code}",
+        "expandAll": "Expand all",
+        "help": "Older messages are discarded, the log starts empty after an evcc restart.",
+        "hide": "Hide OCPP log",
+        "recv": "Received",
+        "recvLegend": "Received from charger",
+        "result": "Response to {action}",
+        "resultUnknown": "Response",
+        "send": "Sent",
+        "sendLegend": "Sent to charger",
+        "show": "Show OCPP log",
+        "title": "OCPP log"
+      },
+      "model": "Model",
+      "noConnectors": "No connector status received yet.",
+      "noTransaction": "No known charging session",
+      "restart": "Restart",
+      "serialNumber": "Serial number",
+      "soft": {
+        "button": "Soft reset",
+        "confirm": "Soft reset",
+        "confirmText": "The charger ends running charging sessions properly and restarts its software.",
+        "success": "Soft reset accepted. The charger reconnects after the restart."
+      },
+      "station": "Charger",
+      "stationId": "Station ID",
+      "stop": {
+        "button": "Stop charging",
+        "confirm": "Stop charging",
+        "confirmText": "The charger ends the charging session on connector {id}.",
+        "success": "The charger accepted the request to stop charging."
+      },
+      "title": "OCPP maintenance",
+      "transaction": "Charging session {id}, ID tag {idTag}",
+      "unlock": {
+        "button": "Unlock connector",
+        "confirm": "Unlock",
+        "confirmText": "The charger unlocks the cable on connector {id}. A running charging session ends.",
+        "success": "Connector unlocked."
+      },
+      "vendor": "Manufacturer"
     },
     "optimizer": {
       "automatic": "Automatic control",

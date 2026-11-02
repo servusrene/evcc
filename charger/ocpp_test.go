@@ -4,6 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"slices"
+	"strings"
 	"sync"
 	"sync/atomic"
 	"testing"
@@ -391,4 +393,52 @@ func (suite *ocppTestSuite) TestEnabledAvailable() {
 		suite.Require().NoError(err)
 		suite.Equal(enable, enabled)
 	}
+}
+
+func (suite *ocppTestSuite) TestMaintenance() {
+	id := suite.stationID("test-maintenance")
+
+	cp, _, _ := suite.startChargePoint(id, 1)
+	suite.Require().NoError(cp.Start(ocppTestUrl))
+
+	c, err := NewOCPP(suite.T().Context(), id, 1, "", "", 0, false, false, false, false, false, ocppTestConnectTimeout)
+	suite.Require().NoError(err)
+	c.conn.TestClock(suite.clock)
+
+	_, err = ocpp.GetStationInfo(suite.stationID("unknown"))
+	suite.ErrorIs(err, ocpp.ErrUnknownStation)
+
+	// no transaction known yet
+	suite.ErrorIs(ocpp.StopTransaction(id, 1), ocpp.ErrNoTransaction)
+	suite.ErrorIs(ocpp.StopTransaction(id, 2), ocpp.ErrNoTransaction)
+
+	_, err = cp.StartTransaction(1, "tag", 0, types.NewDateTime(suite.clock.Now()))
+	suite.Require().NoError(err)
+
+	info, err := ocpp.GetStationInfo(id)
+	suite.Require().NoError(err)
+	suite.Equal(ocpp.StationStatusConnected, info.Status)
+	suite.Equal("vendor", info.Vendor)
+	suite.Equal("model", info.Model)
+	suite.Require().Len(info.Connectors, 1)
+	suite.Equal(1, info.Connectors[0].ID)
+	suite.Equal(core.ChargePointStatusCharging, info.Connectors[0].Status)
+	suite.Equal("tag", info.Connectors[0].IdTag)
+	suite.NotZero(info.Connectors[0].TransactionID)
+
+	suite.NoError(ocpp.StopTransaction(id, 1))
+	suite.NoError(ocpp.UnlockConnector(id, 1))
+	suite.Error(ocpp.UnlockConnector(id, 0))
+	suite.NoError(ocpp.ResetStation(id, core.ResetTypeSoft))
+	suite.NoError(ocpp.ResetStation(id, core.ResetTypeHard))
+	suite.Error(ocpp.ResetStation(id, "invalid"))
+
+	msgs, err := ocpp.GetStationMessages(id)
+	suite.Require().NoError(err)
+	suite.True(slices.ContainsFunc(msgs, func(m ocpp.Message) bool {
+		return m.Direction == "send" && strings.Contains(m.Frame, `"Reset",{"type":"Hard"}`)
+	}))
+
+	_, err = ocpp.GetStationMessages(suite.stationID("unknown"))
+	suite.ErrorIs(err, ocpp.ErrUnknownStation)
 }

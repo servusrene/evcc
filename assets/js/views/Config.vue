@@ -58,6 +58,21 @@
 							@edit="openModal('loadpoint', { id: loadpoint.id })"
 							@enable="handleDisable('loadpoint', loadpoint.id!, false)"
 						>
+							<template v-if="ocppStationId(loadpoint.charger)" #actions>
+								<button
+									type="button"
+									class="btn btn-sm btn-outline-secondary border-0 p-2"
+									:title="$t('config.ocpp.maintenance')"
+									:aria-label="$t('config.ocpp.maintenance')"
+									@click="
+										openModal('ocppmaintenance', {
+											station: ocppStationId(loadpoint.charger),
+										})
+									"
+								>
+									<Maintenance />
+								</button>
+							</template>
 							<template #tags>
 								<DeviceTags :tags="loadpointTags(loadpoint)" usage="charge" />
 							</template>
@@ -621,6 +636,7 @@
 				/>
 				<OcppModal :ocpp="ocpp" :stationTitles="stationTitles" />
 				<OcppForwarderModal @changed="loadDirty" />
+				<OcppMaintenanceModal />
 				<BackupRestoreModal v-bind="backupRestoreProps" />
 				<SecurityModal :auth-disabled="authDisabled" />
 				<ApiKeyModal :auth-disabled="authDisabled" />
@@ -664,6 +680,7 @@ import EebusModal from "../components/Config/EebusModal.vue";
 import OcppIcon from "../components/MaterialIcon/Ocpp.vue";
 import OcppModal from "../components/Config/OcppModal.vue";
 import OcppForwarderModal from "../components/Config/OcppForwarderModal.vue";
+import OcppMaintenanceModal from "../components/Config/OcppMaintenanceModal.vue";
 import formatter from "../mixins/formatter";
 import GeneralConfig from "../components/Config/GeneralConfig.vue";
 import HemsIcon from "../components/MaterialIcon/Hems.vue";
@@ -705,6 +722,7 @@ import TelemetryModal from "../components/Config/TelemetryModal.vue";
 import ExperimentalModal from "../components/Config/ExperimentalModal.vue";
 import Header from "../components/Top/Header.vue";
 import VehicleIcon from "../components/VehicleIcon";
+import Maintenance from "../components/MaterialIcon/Maintenance.vue";
 import VehicleModal from "../components/Config/VehicleModal.vue";
 import { defineComponent, markRaw, type PropType } from "vue";
 import type {
@@ -726,7 +744,7 @@ import type {
 	Remote,
 	OnboardingItem,
 } from "@/types/evcc";
-import { ConfigType, CURRENCY } from "@/types/evcc";
+import { ConfigType, CURRENCY, OCPP_STATION_STATUS } from "@/types/evcc";
 import { circuitTree, type CircuitNode } from "@/utils/circuits";
 
 type DeviceValuesMap = Record<DeviceType, Record<string, any>>;
@@ -787,6 +805,7 @@ export default defineComponent({
 		OcppIcon,
 		OcppModal,
 		OcppForwarderModal,
+		OcppMaintenanceModal,
 		GeneralConfig,
 		HemsIcon,
 		HemsModal,
@@ -822,6 +841,7 @@ export default defineComponent({
 		ExperimentalModal,
 		TopHeader: Header,
 		VehicleIcon,
+		Maintenance,
 		VehicleModal,
 		SetupChecklist,
 		OnboardingModal,
@@ -1803,6 +1823,14 @@ export default defineComponent({
 		hasClassError(className: string) {
 			const fatals = store.state?.fatal || [];
 			return fatals.some((fatal) => fatal.class === className);
+		},
+		// station id of an OCPP charger known to the OCPP server, empty otherwise
+		ocppStationId(chargerName: string): string {
+			const charger = this.chargers.find((c) => c.name === chargerName);
+			const stationId = charger?.config?.["stationid"];
+			if (typeof stationId !== "string" || !stationId) return "";
+			const station = this.ocpp?.status?.stations?.find((s) => s.id === stationId);
+			return station && station.status !== OCPP_STATION_STATUS.UNKNOWN ? stationId : "";
 		},
 		chargerIcon(chargerName: string) {
 			const charger = this.chargers.find((c) => c.name === chargerName);

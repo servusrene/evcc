@@ -19,6 +19,7 @@
 				:title="name"
 				>{{ title }}</strong
 			>
+			<slot name="actions" />
 			<DeviceCardEditIcon
 				:editable="editable"
 				:noEditButton="noEditButton"

@@ -57,6 +57,17 @@
 							:rule="entry.rule"
 							:error="entry.error"
 						/>
+						<button
+							v-if="isConfigured(entry)"
+							type="button"
+							class="station-maintenance btn border d-flex align-items-center justify-content-center p-2 flex-shrink-0"
+							:title="$t('config.ocpp.maintenance')"
+							:aria-label="$t('config.ocpp.maintenance')"
+							data-bs-toggle="tooltip"
+							@click="openMaintenance(entry.id)"
+						>
+							<Maintenance />
+						</button>
 					</li>
 				</ul>
 			</div>
@@ -69,6 +80,7 @@ import { defineComponent, type PropType } from "vue";
 import GenericModal from "../Helper/GenericModal.vue";
 import FormRow from "./FormRow.vue";
 import Markdown from "./Markdown.vue";
+import Maintenance from "../MaterialIcon/Maintenance.vue";
 import OcppForwarderButton from "./OcppForwarderButton.vue";
 import StatusIndicator from "./StatusIndicator.vue";
 import type {
@@ -80,6 +92,7 @@ import type {
 import { OCPP_STATION_STATUS } from "@/types/evcc";
 import { getOcppUrl, getOcppUrlWithStationId } from "@/utils/ocpp";
 import store from "@/store";
+import { openModal } from "@/configModal";
 
 type StationEntry = {
 	id: string;
@@ -95,6 +108,7 @@ export default defineComponent({
 		GenericModal,
 		FormRow,
 		Markdown,
+		Maintenance,
 		OcppForwarderButton,
 		StatusIndicator,
 	},
@@ -155,6 +169,13 @@ export default defineComponent({
 		},
 	},
 	methods: {
+		// maintenance requires a station configured in evcc
+		isConfigured(entry: StationEntry): boolean {
+			return entry.status !== OCPP_STATION_STATUS.UNKNOWN;
+		},
+		openMaintenance(station: string) {
+			openModal("ocppmaintenance", { station });
+		},
 		statusVariant(status: string): "success" | "warning" | "muted" {
 			switch (status) {
 				case "connected":
@@ -177,6 +198,10 @@ export default defineComponent({
 
 .station-bar {
 	--bs-border-color: var(--bs-gray-light);
+}
+
+.station-maintenance {
+	color: var(--bs-gray-medium);
 }
 
 /* min-width:0 lets the identity actually truncate */

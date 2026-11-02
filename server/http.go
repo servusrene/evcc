@@ -10,6 +10,7 @@ import (
 
 	eapi "github.com/evcc-io/evcc/api"
 	"github.com/evcc-io/evcc/api/globalconfig"
+	"github.com/evcc-io/evcc/charger/ocpp"
 	"github.com/evcc-io/evcc/core"
 	"github.com/evcc-io/evcc/core/keys"
 	"github.com/evcc-io/evcc/core/loadpoint"
@@ -422,6 +423,13 @@ func (s *HTTPd) RegisterSystemHandler(site *core.Site, pub publisher, cache *uti
 
 		// ocpp forwarder rules apply at runtime and republish via the ocpp package
 		routes["updateocppforwarder"] = route{Method: "POST", Pattern: "/ocppforwarder", HandlerFunc: updateOcppForwarderHandler}
+
+		// ocpp station maintenance
+		routes["ocppstation"] = route{Method: "GET", Pattern: "/ocpp/stations/{id}", HandlerFunc: ocppStationHandler}
+		routes["ocppstationlog"] = route{Method: "GET", Pattern: "/ocpp/stations/{id}/log", HandlerFunc: ocppStationLogHandler}
+		routes["ocppreset"] = route{Method: "POST", Pattern: "/ocpp/stations/{id}/reset/{type:soft|hard}", HandlerFunc: ocppResetHandler}
+		routes["ocppstop"] = route{Method: "POST", Pattern: "/ocpp/stations/{id}/connectors/{connector:[0-9]+}/stop", HandlerFunc: ocppConnectorHandler(ocpp.StopTransaction)}
+		routes["ocppunlock"] = route{Method: "POST", Pattern: "/ocpp/stations/{id}/connectors/{connector:[0-9]+}/unlock", HandlerFunc: ocppConnectorHandler(ocpp.UnlockConnector)}
 
 		for _, r := range routes {
 			api.Methods(r.Methods()...).Path(r.Pattern).Handler(r.HandlerFunc)

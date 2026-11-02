@@ -79,6 +79,10 @@
         "description": "Maximum grid CO₂ intensity at which smart mode charges from the grid.",
         "other": "CO₂ limit"
     },
+    "connector": {
+        "description": "Socket or fixed cable of a charger a vehicle plugs into. A charger can have several.",
+        "other": "connector"
+    },
     "consumer": {
         "description": "A metered load that evcc does not control, part of house consumption.",
         "other": "consumer"

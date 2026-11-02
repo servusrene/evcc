@@ -120,3 +120,57 @@ func (cp *CP) GetConfigurationRequest(keys ...string) (*core.GetConfigurationCon
 
 	return res, wait(err, rc)
 }
+
+func (cp *CP) ResetRequest(resetType core.ResetType) error {
+	if !cp.Connected() {
+		return api.ErrTimeout
+	}
+
+	rc := make(chan error, 1)
+
+	err := cp.cs.Reset(cp.id, func(request *core.ResetConfirmation, err error) {
+		if err == nil && request != nil && request.Status != core.ResetStatusAccepted {
+			err = errors.New(string(request.Status))
+		}
+
+		rc <- err
+	}, resetType)
+
+	return wait(err, rc)
+}
+
+func (cp *CP) RemoteStopTransactionRequest(transactionId int) error {
+	if !cp.Connected() {
+		return api.ErrTimeout
+	}
+
+	rc := make(chan error, 1)
+
+	err := cp.cs.RemoteStopTransaction(cp.id, func(request *core.RemoteStopTransactionConfirmation, err error) {
+		if err == nil && request != nil && request.Status != types.RemoteStartStopStatusAccepted {
+			err = errors.New(string(request.Status))
+		}
+
+		rc <- err
+	}, transactionId)
+
+	return wait(err, rc)
+}
+
+func (cp *CP) UnlockConnectorRequest(connectorId int) error {
+	if !cp.Connected() {
+		return api.ErrTimeout
+	}
+
+	rc := make(chan error, 1)
+
+	err := cp.cs.UnlockConnector(cp.id, func(request *core.UnlockConnectorConfirmation, err error) {
+		if err == nil && request != nil && request.Status != core.UnlockStatusUnlocked {
+			err = errors.New(string(request.Status))
+		}
+
+		rc <- err
+	}, connectorId)
+
+	return wait(err, rc)
+}

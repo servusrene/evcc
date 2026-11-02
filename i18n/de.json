@@ -851,6 +851,7 @@
       "forwardingConfigured": "Weiterleitung konfiguriert",
       "forwardingError": "Weiterleitungsfehler",
       "forwardingOff": "Keine Weiterleitung konfiguriert",
+      "maintenance": "Wartung",
       "noChargers": "Keine OCPP-Wallboxen erkannt.",
       "stations": "Station-IDs",
       "stationsHelp": "Konfigurierte und erkannte OCPP-Wallboxen. Zusätzlich zur lokalen Steuerung kannst du eine Nachrichtenweiterleitung an einen externen Server (z. B. für die Abrechnung) konfigurieren.",
@@ -886,6 +887,64 @@
       "upstreamUrlHelp": "OCPP-WebSocket-URL des externen Servers.",
       "username": "Benutzername",
       "usernameHelp": "Für HTTP-Basic-Auth am Upstream-Server."
+    },
+    "ocppmaintenance": {
+      "connection": "Verbindung",
+      "connector": "Anschluss {id}",
+      "connectors": "Anschlüsse",
+      "description": "Sende OCPP-Befehle direkt an die Wallbox. Nutze sie, wenn die Wallbox nicht mehr wie erwartet reagiert.",
+      "failed": "Die Wallbox hat den Befehl nicht angenommen.",
+      "firmwareVersion": "Firmware",
+      "hard": {
+        "button": "Hard-Neustart",
+        "confirm": "Hard-Neustart",
+        "confirmText": "Die Wallbox startet komplett neu wie nach einer Stromunterbrechung. Laufende Ladevorgänge werden unterbrochen. Nur verwenden, wenn ein Soft-Neustart nicht geholfen hat.",
+        "success": "Hard-Neustart angenommen. Die Wallbox verbindet sich nach dem Neustart wieder."
+      },
+      "log": {
+        "collapseAll": "Alle zuklappen",
+        "empty": "Noch keine Nachrichten aufgezeichnet.",
+        "error": "Fehler {code}",
+        "expandAll": "Alle aufklappen",
+        "help": "Ältere Nachrichten werden verworfen, nach einem Neustart von evcc ist das Log leer.",
+        "hide": "OCPP-Log ausblenden",
+        "recv": "Empfangen",
+        "recvLegend": "Von der Wallbox empfangen",
+        "result": "Antwort auf {action}",
+        "resultUnknown": "Antwort",
+        "send": "Gesendet",
+        "sendLegend": "An die Wallbox gesendet",
+        "show": "OCPP-Log anzeigen",
+        "title": "OCPP-Log"
+      },
+      "model": "Modell",
+      "noConnectors": "Noch kein Status der Anschlüsse empfangen.",
+      "noTransaction": "Kein bekannter Ladevorgang",
+      "restart": "Neustart",
+      "serialNumber": "Seriennummer",
+      "soft": {
+        "button": "Soft-Neustart",
+        "confirm": "Soft-Neustart",
+        "confirmText": "Die Wallbox beendet laufende Ladevorgänge ordnungsgemäß und startet ihre Software neu.",
+        "success": "Soft-Neustart angenommen. Die Wallbox verbindet sich nach dem Neustart wieder."
+      },
+      "station": "Wallbox",
+      "stationId": "Station-ID",
+      "stop": {
+        "button": "Laden beenden",
+        "confirm": "Laden beenden",
+        "confirmText": "Die Wallbox beendet den Ladevorgang an Anschluss {id}.",
+        "success": "Die Wallbox hat die Anfrage zum Beenden des Ladevorgangs angenommen."
+      },
+      "title": "OCPP-Wartung",
+      "transaction": "Ladevorgang {id}, ID-Tag {idTag}",
+      "unlock": {
+        "button": "Stecker entriegeln",
+        "confirm": "Entriegeln",
+        "confirmText": "Die Wallbox entriegelt das Kabel an Anschluss {id}. Ein laufender Ladevorgang wird beendet.",
+        "success": "Stecker entriegelt."
+      },
+      "vendor": "Hersteller"
     },
     "optimizer": {
       "automatic": "Automatische Steuerung",
